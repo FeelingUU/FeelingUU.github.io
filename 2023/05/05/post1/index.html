@@ -16,12 +16,12 @@
   <meta name="author" content="FeelingUU">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前几天看了下C的数据结构，想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 编译器版本：x86-64 gcc 8.1 源码： 1234567int main(void)&amp;#123;    long num1 &#x3D; 1;    int num2 &#x3D; 2;    long num3 &#x3D; 3;    long num4 &#x3D; 4;    return 0;&amp;#125">
+    <meta name="description" content="前几天想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 编译器版本：x86-64 gcc 8.1 源码： 1234567int main(void)&amp;#123;    long num1 &#x3D; 1;    int num2 &#x3D; 2;    long num3 &#x3D; 3;    long num4 &#x3D; 4;    return 0;&amp;#125; 编译后： 123">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C语言中不同数据类型，定义变量的顺序对栈内存分配的影响">
 <meta property="og:url" content="http://example.com/2023/05/05/post1/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="前几天看了下C的数据结构，想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 编译器版本：x86-64 gcc 8.1 源码： 1234567int main(void)&amp;#123;    long num1 &#x3D; 1;    int num2 &#x3D; 2;    long num3 &#x3D; 3;    long num4 &#x3D; 4;    return 0;&amp;#125">
+<meta property="og:description" content="前几天想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 编译器版本：x86-64 gcc 8.1 源码： 1234567int main(void)&amp;#123;    long num1 &#x3D; 1;    int num2 &#x3D; 2;    long num3 &#x3D; 3;    long num4 &#x3D; 4;    return 0;&amp;#125; 编译后： 123">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2023/05/05/post1/1.png">
 <meta property="og:image" content="http://example.com/2023/05/05/post1/1.1.png">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://example.com/2023/05/05/post1/3.png">
 <meta property="og:image" content="http://example.com/2023/05/05/post1/4.png">
 <meta property="article:published_time" content="2023-05-05T06:22:46.079Z">
-<meta property="article:modified_time" content="2023-05-05T11:45:13.202Z">
+<meta property="article:modified_time" content="2023-05-05T12:07:09.233Z">
 <meta property="article:author" content="FeelingUU">
 <meta property="article:tag" content="C">
 <meta property="article:tag" content="ASM">
@@ -238,7 +238,7 @@
         
         
         
-          14 分钟
+          13 分钟
         
       </span>
     
@@ -281,7 +281,7 @@
             
               <div class="markdown-body">
                 
-                <p>前几天看了下C的数据结构，想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 <br><br>编译器版本：x86-64 gcc 8.1 <br><br>源码：</p>
+                <p>前几天想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 <br><br>编译器版本：x86-64 gcc 8.1 <br><br>源码：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>&#123;<br>    <span class="hljs-type">long</span> num1 = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> num2 = <span class="hljs-number">2</span>;<br>    <span class="hljs-type">long</span> num3 = <span class="hljs-number">3</span>;<br>    <span class="hljs-type">long</span> num4 = <span class="hljs-number">4</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>编译后：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">main:<br>    push    rbp<br>    mov     rbp, rsp<br>    mov     QWORD PTR [rbp<span class="hljs-number">-8</span>], <span class="hljs-number">1</span><br>    mov     DWORD PTR [rbp<span class="hljs-number">-12</span>], <span class="hljs-number">2</span><br>    mov     QWORD PTR [rbp<span class="hljs-number">-24</span>], <span class="hljs-number">3</span><br>    mov     QWORD PTR [rbp<span class="hljs-number">-32</span>], <span class="hljs-number">4</span><br>    mov     eax, <span class="hljs-number">0</span><br>    pop     rbp<br>    ret<br></code></pre></td></tr></table></figure>
