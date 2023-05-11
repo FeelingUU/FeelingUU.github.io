@@ -16,29 +16,26 @@
   <meta name="author" content="FeelingUU">
   <meta name="keywords" content="">
   
-    <meta name="description" content="前几天想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 编译器版本：x86-64 gcc 8.1 源码： 1234567int main(void)&amp;#123;    long num1 &#x3D; 1;    int num2 &#x3D; 2;    long num3 &#x3D; 3;    long num4 &#x3D; 4;    return 0;&amp;#125; 编译后： 123">
+    <meta name="description" content="参考资料: 1https:&#x2F;&#x2F;github.com&#x2F;dibingfa&#x2F;flash-linux0.11-talk 源码地址: 1https:&#x2F;&#x2F;elixir.bootlin.com&#x2F;linux&#x2F;0.11&#x2F;source   分页机制，页目录表、页表的定义参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个 分段、分页的流程总结为：1、给出逻辑地址，地址拆分为段选择子+偏移地址段选择子通过GDT表查到段">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C语言中不同数据类型，定义变量的顺序对栈内存分配的影响">
-<meta property="og:url" content="http://example.com/2023/05/05/post1/index.html">
+<meta property="og:title" content="【填坑】linux-0.11源码阅读">
+<meta property="og:url" content="http://example.com/2023/05/09/post2/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="前几天想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 编译器版本：x86-64 gcc 8.1 源码： 1234567int main(void)&amp;#123;    long num1 &#x3D; 1;    int num2 &#x3D; 2;    long num3 &#x3D; 3;    long num4 &#x3D; 4;    return 0;&amp;#125; 编译后： 123">
+<meta property="og:description" content="参考资料: 1https:&#x2F;&#x2F;github.com&#x2F;dibingfa&#x2F;flash-linux0.11-talk 源码地址: 1https:&#x2F;&#x2F;elixir.bootlin.com&#x2F;linux&#x2F;0.11&#x2F;source   分页机制，页目录表、页表的定义参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个 分段、分页的流程总结为：1、给出逻辑地址，地址拆分为段选择子+偏移地址段选择子通过GDT表查到段">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/05/05/post1/1.png">
-<meta property="og:image" content="http://example.com/2023/05/05/post1/1.1.png">
-<meta property="og:image" content="http://example.com/2023/05/05/post1/2.png">
-<meta property="og:image" content="http://example.com/2023/05/05/post1/3.png">
-<meta property="og:image" content="http://example.com/2023/05/05/post1/4.png">
-<meta property="article:published_time" content="2023-05-05T06:22:46.079Z">
-<meta property="article:modified_time" content="2023-05-09T12:56:04.887Z">
+<meta property="og:image" content="http://example.com/2023/05/09/post2/pages_def.svg">
+<meta property="og:image" content="http://example.com/2023/05/09/post2/logicalAddr_to_linearAddr.png">
+<meta property="og:image" content="http://example.com/2023/05/09/post2/seg_paging.png">
+<meta property="article:published_time" content="2023-05-09T12:51:47.377Z">
+<meta property="article:modified_time" content="2023-05-09T19:12:26.771Z">
 <meta property="article:author" content="FeelingUU">
-<meta property="article:tag" content="C">
-<meta property="article:tag" content="ASM">
+<meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/05/05/post1/1.png">
+<meta name="twitter:image" content="http://example.com/2023/05/09/post2/pages_def.svg">
   
   
   
-  <title>C语言中不同数据类型，定义变量的顺序对栈内存分配的影响 - </title>
+  <title>【填坑】linux-0.11源码阅读 - </title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -204,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle">C语言中不同数据类型，定义变量的顺序对栈内存分配的影响</span>
+            <span id="subtitle">【填坑】linux-0.11源码阅读</span>
           
         </div>
 
@@ -215,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-05 14:22" pubdate>
-          2023年5月5日 下午
+        <time datetime="2023-05-09 20:51" pubdate>
+          2023年5月9日 晚上
         </time>
       </span>
     
@@ -227,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          1k 字
         
       </span>
     
@@ -238,7 +235,7 @@
         
         
         
-          14 分钟
+          9 分钟
         
       </span>
     
@@ -276,32 +273,31 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">C语言中不同数据类型，定义变量的顺序对栈内存分配的影响</h1>
+            <h1 style="display: none">【填坑】linux-0.11源码阅读</h1>
             
             
               <div class="markdown-body">
                 
-                <p>前几天想在Compiler Explorer里看下，变量和值在内存里是怎么关联的。结果有意外发现 <br><br>编译器版本：x86-64 gcc 8.1 <br><br>源码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span>&#123;<br>    <span class="hljs-type">long</span> num1 = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> num2 = <span class="hljs-number">2</span>;<br>    <span class="hljs-type">long</span> num3 = <span class="hljs-number">3</span>;<br>    <span class="hljs-type">long</span> num4 = <span class="hljs-number">4</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>编译后：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">main:<br>    push    rbp<br>    mov     rbp, rsp<br>    mov     QWORD PTR [rbp<span class="hljs-number">-8</span>], <span class="hljs-number">1</span><br>    mov     DWORD PTR [rbp<span class="hljs-number">-12</span>], <span class="hljs-number">2</span><br>    mov     QWORD PTR [rbp<span class="hljs-number">-24</span>], <span class="hljs-number">3</span><br>    mov     QWORD PTR [rbp<span class="hljs-number">-32</span>], <span class="hljs-number">4</span><br>    mov     eax, <span class="hljs-number">0</span><br>    pop     rbp<br>    ret<br></code></pre></td></tr></table></figure>
-<p>可以看到，<br>第一个long类型的值1分配了8个内存单元，<br>第二个long类型的值3却分配了12个内存单元，<br>第三个long类型的值4又正常分配了8个内存单元</p>
-<p>如果把int num2 &#x3D; 2;语句放到最后定义，前三个long类型的都正常分配了内存大小</p>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs x86asm"><span class="hljs-symbol">main:</span><br>    <span class="hljs-keyword">push</span>    <span class="hljs-built_in">rbp</span><br>    <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">rbp</span>, <span class="hljs-built_in">rsp</span><br>    <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">QWORD</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">rbp</span>-<span class="hljs-number">8</span>], <span class="hljs-number">1</span><br>    <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">QWORD</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">rbp</span>-<span class="hljs-number">16</span>], <span class="hljs-number">3</span><br>    <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">QWORD</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">rbp</span>-<span class="hljs-number">24</span>], <span class="hljs-number">4</span><br>    <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">DWORD</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">rbp</span>-<span class="hljs-number">28</span>], <span class="hljs-number">2</span><br>    <span class="hljs-keyword">mov</span>     <span class="hljs-built_in">eax</span>, <span class="hljs-number">0</span><br>    <span class="hljs-keyword">pop</span>     <span class="hljs-built_in">rbp</span><br>    <span class="hljs-keyword">ret</span><br></code></pre></td></tr></table></figure>
-<p>换一个编译器，还是本篇开头的源码<br>armv8-a clang 16.0.0，反而又变成了第一个long型数据占12个内存单元</p>
-<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs llvm"><span class="hljs-symbol">main:</span>  // <span class="hljs-title">@main</span><br>    <span class="hljs-keyword">sub</span>     sp<span class="hljs-punctuation">,</span> sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#48</span><br>    mov     w<span class="hljs-number">0</span><span class="hljs-punctuation">,</span> wzr<br>    str     wzr<span class="hljs-punctuation">,</span> [sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#44</span>]<br>    mov     <span class="hljs-keyword">x</span><span class="hljs-number">8</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">#1</span><br>    str     <span class="hljs-keyword">x</span><span class="hljs-number">8</span><span class="hljs-punctuation">,</span> [sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#32</span>]<br>    mov     w<span class="hljs-number">8</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">#2</span><br>    str     w<span class="hljs-number">8</span><span class="hljs-punctuation">,</span> [sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#28</span>]<br>    mov     <span class="hljs-keyword">x</span><span class="hljs-number">8</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">#3</span><br>    str     <span class="hljs-keyword">x</span><span class="hljs-number">8</span><span class="hljs-punctuation">,</span> [sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#16</span>]<br>    mov     <span class="hljs-keyword">x</span><span class="hljs-number">8</span><span class="hljs-punctuation">,</span> <span class="hljs-variable">#4</span><br>    str     <span class="hljs-keyword">x</span><span class="hljs-number">8</span><span class="hljs-punctuation">,</span> [sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#8</span>]<br>    <span class="hljs-keyword">add</span>     sp<span class="hljs-punctuation">,</span> sp<span class="hljs-punctuation">,</span> <span class="hljs-variable">#48</span><br>    <span class="hljs-keyword">ret</span><br></code></pre></td></tr></table></figure>
-<p>自己电脑上的编译器，gcc version 8.1.0 (x86_64-win32-seh-rev0, Built by MinGW-W64 project)，<br>exe文件用x64 dbg打开</p>
-<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs x86asm"><span class="hljs-keyword">mov</span> <span class="hljs-built_in">dword</span> <span class="hljs-built_in">ptr</span> <span class="hljs-built_in">ss</span>:[<span class="hljs-built_in">rbp</span>-<span class="hljs-number">4</span>],<span class="hljs-number">1</span><br><span class="hljs-keyword">mov</span> <span class="hljs-built_in">dword</span> <span class="hljs-built_in">ptr</span> <span class="hljs-built_in">ss</span>:[<span class="hljs-built_in">rbp</span>-<span class="hljs-number">8</span>],<span class="hljs-number">2</span><br><span class="hljs-keyword">mov</span> <span class="hljs-built_in">dword</span> <span class="hljs-built_in">ptr</span> <span class="hljs-built_in">ss</span>:[<span class="hljs-built_in">rbp</span>-C],<span class="hljs-number">3</span><br><span class="hljs-keyword">mov</span> <span class="hljs-built_in">dword</span> <span class="hljs-built_in">ptr</span> <span class="hljs-built_in">ss</span>:[<span class="hljs-built_in">rbp</span>-<span class="hljs-number">10</span>],<span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
-<p>内存数据：<br><img src="./1.png" srcset="/img/loading.gif" lazyload><br>这里long和int又都分配了4字节，调整int变量赋值语句的顺序也不再影响long型变量的栈分配空间，<br><img src="./1.1.png" srcset="/img/loading.gif" lazyload><br>看到这里严重怀疑是Compiler Explorer的坑，只是做了语句转换，后台并没有实际的编译器去执行。<br>想到这里又开了台linux虚拟机，再次验证一下<br>gcc version 10.2.1 20210110 (Debian 10.2.1-6)<br>同样开头的源码,编译出来的可执行文件直接拖进winhex（给自己留个坑，linux下gcc的调试及工具、内核调试、ebpf等等还没怎么了解过；ida x64dbg之前看到挺多人发gpt插件，回头体验下）<br><img src="./2.png" srcset="/img/loading.gif" lazyload></p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">48C745</span> F8 <span class="hljs-number">01000000</span><br>  <span class="hljs-attribute">C745</span> F4 <span class="hljs-number">02000000</span><br><span class="hljs-attribute">48C745</span> E8 <span class="hljs-number">03000000</span><br><span class="hljs-attribute">48C745</span> E0 <span class="hljs-number">04000000</span><br></code></pre></td></tr></table></figure>
-<p>偷个懒：</p>
-<p><img src="./3.png" srcset="/img/loading.gif" lazyload><br><br>结果光速打脸，编译之后依次分配了8、4、12、8个内存单元，linux下的gcc编译确实有这种情况<br>再试一次把int赋值语句放到最后</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">48C745</span> F8 <span class="hljs-number">01000000</span><br><span class="hljs-attribute">48C745</span> F0 <span class="hljs-number">03000000</span><br><span class="hljs-attribute">48C745</span> E8 <span class="hljs-number">04000000</span><br>  <span class="hljs-attribute">C745</span> E4 <span class="hljs-number">02000000</span><br></code></pre></td></tr></table></figure>
-<p>编译之后依次分配了8、8、8、4个内存单元，和Compiler Explorer编译结果一样….</p>
-<p>ChatGPT对此的回答是<br><img src="./4.png" srcset="/img/loading.gif" lazyload></p>
-<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><pre><code class="hljs">不同平台编译器，编译之后结果确实不一样
-linux下gcc,不同类型的变量初始化赋值时，最好分类一起赋值，节省内存空间(虽然意义不大-_-)
-</code></pre>
+                <p>参考资料:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/dibingfa/</span>flash-linux0.<span class="hljs-number">11</span>-talk<br></code></pre></td></tr></table></figure>
+<p>源码地址:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>elixir.bootlin.com<span class="hljs-regexp">/linux/</span><span class="hljs-number">0.11</span>/source<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="分页机制，页目录表、页表的定义"><a href="#分页机制，页目录表、页表的定义" class="headerlink" title="分页机制，页目录表、页表的定义"></a>分页机制，页目录表、页表的定义</h2><p>参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个<br><img src="./pages_def.svg" srcset="/img/loading.gif" lazyload><br></p>
+<p>分段、分页的流程总结为：<br>1、给出逻辑地址，地址拆分为段选择子+偏移地址<br>段选择子通过GDT表查到段基址，再与偏移地址相加获得线性地址</p>
+<p>2、若开启了分页机制，则<br>分段机制获得的线性地址需要再次计算<br>页目录表值-页表偏移值-页内偏移地址(32位模式下)<br>  10位 -     10位   -   12位</p>
+<p>通过页目录表值、页表偏移地址获得页表项地址，再与页内偏移地址相加最终获得物理地址</p>
+<p><img src="./logicalAddr_to_linearAddr.png" srcset="/img/loading.gif" lazyload><br><br><img src="./seg_paging.png" srcset="/img/loading.gif" lazyload><br></p>
+<h2 id="空闲内存页申请"><a href="#空闲内存页申请" class="headerlink" title="空闲内存页申请"></a>空闲内存页申请</h2><p>get_free_page()方法，扫描空闲内存页时，内核会从高地址的内存页链表中查找空闲页面。如果找到了空闲页面，就将其标记为已使用，并返回该页面的物理地址。如果没有找到空闲页面，则会进行内存压缩操作，以腾出一些空闲页面。</p>
+<h2 id="挖坑待看："><a href="#挖坑待看：" class="headerlink" title="挖坑待看："></a>挖坑待看：</h2><p>有关寄存器的详细信息，可以参考 Intel 手册：<br>Volume 1 Chapter 3.2 OVERVIEW OF THE BASIC EXECUTION ENVIRONMEN</p>
+<p>如果想了解计算机启动时详细的初始化过程，还是得参考 Intel 手册：<br>Volume 3A Chapter 9 PROCESSOR MANAGEMENT AND INITIALIZATION</p>
+<p>如果想了解汇编指令的信息，可以参考 Intel 手册：<br>Volume 2 Chapter 3 ~ Chapter 5</p>
+<p>保护模式下逻辑地址到线性地址（不开启分页时就是物理地址）的转化，看 Intel 手册：<br>Volume 3 Chapter 3.4 Logical And Linear Addresses</p>
+<p>关于逻辑地址-线性地址-物理地址的转换，可以参考 Intel 手册：<br>Intel 3A Chapter 3 Protected-Mode Memory Management</p>
+<p>段描述符结构和详细说明，看 Intel 手册：<br>Volume 3 Chapter 3.4.5 Segment Descriptors</p>
+<p>页目录表和页表的具体结构，可以看<br>Intel 3A Chapter 4.3 32-bit paging</p>
+<p>关于 ret 指令，其实 Intel CPU 是配合 call 设计的，有关 call 和 ret 指令，即调用和返回指令，可以参考 Intel 手册：<br>Intel 1 Chapter 6.4 CALLING PROCEDURES USING CALL AND RET</p>
 
                 
               </div>
@@ -314,9 +310,7 @@ linux下gcc,不同类型的变量初始化赋值时，最好分类一起赋值�
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/C/">#C</a>
-      
-        <a href="/tags/ASM/">#ASM</a>
+        <a href="/tags/linux/">#linux</a>
       
     </div>
   
@@ -328,8 +322,8 @@ linux下gcc,不同类型的变量初始化赋值时，最好分类一起赋值�
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>C语言中不同数据类型，定义变量的顺序对栈内存分配的影响</div>
-      <div>http://example.com/2023/05/05/post1/</div>
+      <div>【填坑】linux-0.11源码阅读</div>
+      <div>http://example.com/2023/05/09/post2/</div>
     </div>
     <div class="license-meta">
       
@@ -341,7 +335,7 @@ linux下gcc,不同类型的变量初始化赋值时，最好分类一起赋值�
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月5日</div>
+          <div>2023年5月9日</div>
         </div>
       
       
@@ -373,15 +367,15 @@ linux下gcc,不同类型的变量初始化赋值时，最好分类一起赋值�
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/09/post2/" title="【填坑】linux-0.11源码阅读">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【填坑】linux-0.11源码阅读</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2023/05/05/post1/" title="C语言中不同数据类型，定义变量的顺序对栈内存分配的影响">
+                        <span class="hidden-mobile">C语言中不同数据类型，定义变量的顺序对栈内存分配的影响</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>

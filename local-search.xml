@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>【填坑】linux-0.11源码阅读</title>
+    <link href="/2023/05/09/post2/"/>
+    <url>/2023/05/09/post2/</url>
+    
+    <content type="html"><![CDATA[<p>参考资料:</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/dibingfa/</span>flash-linux0.<span class="hljs-number">11</span>-talk<br></code></pre></td></tr></table></figure><p>源码地址:</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>elixir.bootlin.com<span class="hljs-regexp">/linux/</span><span class="hljs-number">0.11</span>/source<br></code></pre></td></tr></table></figure><h2 id="分页机制，页目录表、页表的定义"><a href="#分页机制，页目录表、页表的定义" class="headerlink" title="分页机制，页目录表、页表的定义"></a>分页机制，页目录表、页表的定义</h2><p>参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个<br><img src="./pages_def.svg"><br></p><p>分段、分页的流程总结为：<br>1、给出逻辑地址，地址拆分为段选择子+偏移地址<br>段选择子通过GDT表查到段基址，再与偏移地址相加获得线性地址</p><p>2、若开启了分页机制，则<br>分段机制获得的线性地址需要再次计算<br>页目录表值-页表偏移值-页内偏移地址(32位模式下)<br>  10位 -     10位   -   12位</p><p>通过页目录表值、页表偏移地址获得页表项地址，再与页内偏移地址相加最终获得物理地址</p><p><img src="./logicalAddr_to_linearAddr.png"><br><br><img src="./seg_paging.png"><br></p><h2 id="空闲内存页申请"><a href="#空闲内存页申请" class="headerlink" title="空闲内存页申请"></a>空闲内存页申请</h2><p>get_free_page()方法，扫描空闲内存页时，内核会从高地址的内存页链表中查找空闲页面。如果找到了空闲页面，就将其标记为已使用，并返回该页面的物理地址。如果没有找到空闲页面，则会进行内存压缩操作，以腾出一些空闲页面。</p><h2 id="挖坑待看："><a href="#挖坑待看：" class="headerlink" title="挖坑待看："></a>挖坑待看：</h2><p>有关寄存器的详细信息，可以参考 Intel 手册：<br>Volume 1 Chapter 3.2 OVERVIEW OF THE BASIC EXECUTION ENVIRONMEN</p><p>如果想了解计算机启动时详细的初始化过程，还是得参考 Intel 手册：<br>Volume 3A Chapter 9 PROCESSOR MANAGEMENT AND INITIALIZATION</p><p>如果想了解汇编指令的信息，可以参考 Intel 手册：<br>Volume 2 Chapter 3 ~ Chapter 5</p><p>保护模式下逻辑地址到线性地址（不开启分页时就是物理地址）的转化，看 Intel 手册：<br>Volume 3 Chapter 3.4 Logical And Linear Addresses</p><p>关于逻辑地址-线性地址-物理地址的转换，可以参考 Intel 手册：<br>Intel 3A Chapter 3 Protected-Mode Memory Management</p><p>段描述符结构和详细说明，看 Intel 手册：<br>Volume 3 Chapter 3.4.5 Segment Descriptors</p><p>页目录表和页表的具体结构，可以看<br>Intel 3A Chapter 4.3 32-bit paging</p><p>关于 ret 指令，其实 Intel CPU 是配合 call 设计的，有关 call 和 ret 指令，即调用和返回指令，可以参考 Intel 手册：<br>Intel 1 Chapter 6.4 CALLING PROCEDURES USING CALL AND RET</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>C语言中不同数据类型，定义变量的顺序对栈内存分配的影响</title>
     <link href="/2023/05/05/post1/"/>
     <url>/2023/05/05/post1/</url>
