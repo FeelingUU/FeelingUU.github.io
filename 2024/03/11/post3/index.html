@@ -16,26 +16,25 @@
   <meta name="author" content="FeelingUU">
   <meta name="keywords" content="">
   
-    <meta name="description" content="参考资料: 1https:&#x2F;&#x2F;github.com&#x2F;dibingfa&#x2F;flash-linux0.11-talk 源码地址: 1https:&#x2F;&#x2F;elixir.bootlin.com&#x2F;linux&#x2F;0.11&#x2F;source   分页机制，页目录表、页表的定义参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个 分段、分页的流程总结为：1、给出逻辑地址，地址拆分为段选择子+偏移地址段选择子通过GDT表查到段">
+    <meta name="description" content="区别wget    参数最丰富，可下载全站，很多细节可通过参数来定义，适合简单轻量的下载需求 axel    相比wget，更擅长多线程下载，参数较aria2更简单 aria2   支持多种协议、多线程、断点续传，特别是bt下载的超大文件，且支持rpc接口 wget常用参数-b , –background  启动后转入后台 -e COMMAND , –execute&#x3D;COMMAND">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【填坑】linux-0.11源码阅读">
-<meta property="og:url" content="http://example.com/2023/05/09/post2/index.html">
+<meta property="og:title" content="常用的三个下载指令，wget|axel|aria2">
+<meta property="og:url" content="http://example.com/2024/03/11/post3/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="参考资料: 1https:&#x2F;&#x2F;github.com&#x2F;dibingfa&#x2F;flash-linux0.11-talk 源码地址: 1https:&#x2F;&#x2F;elixir.bootlin.com&#x2F;linux&#x2F;0.11&#x2F;source   分页机制，页目录表、页表的定义参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个 分段、分页的流程总结为：1、给出逻辑地址，地址拆分为段选择子+偏移地址段选择子通过GDT表查到段">
+<meta property="og:description" content="区别wget    参数最丰富，可下载全站，很多细节可通过参数来定义，适合简单轻量的下载需求 axel    相比wget，更擅长多线程下载，参数较aria2更简单 aria2   支持多种协议、多线程、断点续传，特别是bt下载的超大文件，且支持rpc接口 wget常用参数-b , –background  启动后转入后台 -e COMMAND , –execute&#x3D;COMMAND">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/05/09/post2/pages_def.svg">
-<meta property="og:image" content="http://example.com/2023/05/09/post2/logicalAddr_to_linearAddr.png">
-<meta property="og:image" content="http://example.com/2023/05/09/post2/seg_paging.png">
-<meta property="article:published_time" content="2023-05-09T12:51:47.377Z">
-<meta property="article:modified_time" content="2023-05-10T13:27:16.432Z">
+<meta property="article:published_time" content="2024-03-11T10:41:11.000Z">
+<meta property="article:modified_time" content="2024-03-13T13:51:06.264Z">
 <meta property="article:author" content="FeelingUU">
 <meta property="article:tag" content="linux">
+<meta property="article:tag" content="wget">
+<meta property="article:tag" content="axel">
+<meta property="article:tag" content="aria2">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/05/09/post2/pages_def.svg">
   
   
   
-  <title>【填坑】linux-0.11源码阅读 - </title>
+  <title>常用的三个下载指令，wget|axel|aria2 - </title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle">【填坑】linux-0.11源码阅读</span>
+            <span id="subtitle">常用的三个下载指令，wget|axel|aria2</span>
           
         </div>
 
@@ -212,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-09 20:51" pubdate>
-          2023年5月9日 晚上
+        <time datetime="2024-03-11 18:41" pubdate>
+          2024年3月11日 晚上
         </time>
       </span>
     
@@ -224,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          823 字
         
       </span>
     
@@ -235,7 +234,7 @@
         
         
         
-          9 分钟
+          7 分钟
         
       </span>
     
@@ -273,32 +272,26 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【填坑】linux-0.11源码阅读</h1>
+            <h1 style="display: none">常用的三个下载指令，wget|axel|aria2</h1>
             
             
               <div class="markdown-body">
                 
-                <p>参考资料:</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/dibingfa/</span>flash-linux0.<span class="hljs-number">11</span>-talk<br></code></pre></td></tr></table></figure>
-<p>源码地址:</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>elixir.bootlin.com<span class="hljs-regexp">/linux/</span><span class="hljs-number">0.11</span>/source<br></code></pre></td></tr></table></figure>
-
-
-<h2 id="分页机制，页目录表、页表的定义"><a href="#分页机制，页目录表、页表的定义" class="headerlink" title="分页机制，页目录表、页表的定义"></a>分页机制，页目录表、页表的定义</h2><p>参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个<br><img src="./pages_def.svg" srcset="/img/loading.gif" lazyload><br></p>
-<p>分段、分页的流程总结为：<br>1、给出逻辑地址，地址拆分为段选择子+偏移地址<br>段选择子通过GDT表查到段基址，再与偏移地址相加获得线性地址</p>
-<p>2、若开启了分页机制，则<br>分段机制获得的线性地址需要再次计算<br>页目录表值-页表偏移值-页内偏移地址(32位模式下)<br>  10位 -     10位   -   12位</p>
-<p>通过页目录表值、页表偏移地址获得页表项地址，再与页内偏移地址相加最终获得物理地址</p>
-<p><img src="./logicalAddr_to_linearAddr.png" srcset="/img/loading.gif" lazyload><br><br><img src="./seg_paging.png" srcset="/img/loading.gif" lazyload><br></p>
-<h2 id="空闲内存页申请"><a href="#空闲内存页申请" class="headerlink" title="空闲内存页申请"></a>空闲内存页申请</h2><p>memory.c的get_free_page()方法，函数里内嵌了一段汇编代码，扫描空闲内存页时，内核会从高地址的内存页链表中查找空闲页面。如果找到了空闲页面，就将其标记为已使用，并返回该页面的物理地址。如果没有找到空闲页面，则会进行内存压缩操作，以腾出一些空闲页面。</p>
-<h2 id="挖坑待看："><a href="#挖坑待看：" class="headerlink" title="挖坑待看："></a>挖坑待看：</h2><p>有关寄存器的详细信息，可以参考 Intel 手册：<br>Volume 1 Chapter 3.2 OVERVIEW OF THE BASIC EXECUTION ENVIRONMEN</p>
-<p>如果想了解计算机启动时详细的初始化过程，还是得参考 Intel 手册：<br>Volume 3A Chapter 9 PROCESSOR MANAGEMENT AND INITIALIZATION</p>
-<p>如果想了解汇编指令的信息，可以参考 Intel 手册：<br>Volume 2 Chapter 3 ~ Chapter 5</p>
-<p>保护模式下逻辑地址到线性地址（不开启分页时就是物理地址）的转化，看 Intel 手册：<br>Volume 3 Chapter 3.4 Logical And Linear Addresses</p>
-<p>关于逻辑地址-线性地址-物理地址的转换，可以参考 Intel 手册：<br>Intel 3A Chapter 3 Protected-Mode Memory Management</p>
-<p>段描述符结构和详细说明，看 Intel 手册：<br>Volume 3 Chapter 3.4.5 Segment Descriptors</p>
-<p>页目录表和页表的具体结构，可以看<br>Intel 3A Chapter 4.3 32-bit paging</p>
-<p>关于 ret 指令，其实 Intel CPU 是配合 call 设计的，有关 call 和 ret 指令，即调用和返回指令，可以参考 Intel 手册：<br>Intel 1 Chapter 6.4 CALLING PROCEDURES USING CALL AND RET</p>
-
+                <h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><p>wget    参数最丰富，可下载全站，很多细节可通过参数来定义，适合简单轻量的下载需求</p>
+<p>axel    相比wget，更擅长多线程下载，参数较aria2更简单</p>
+<p>aria2   支持多种协议、多线程、断点续传，特别是bt下载的超大文件，且支持rpc接口</p>
+<h2 id="wget常用参数"><a href="#wget常用参数" class="headerlink" title="wget常用参数"></a>wget常用参数</h2><p>-b , –background  启动后转入后台</p>
+<p>-e COMMAND , –execute&#x3D;COMMAND   运行一个“.wgetrc”风格的命令</p>
+<p>-o logfile , –output-file&#x3D;logfile  输出日志信息至指定文件</p>
+<p>-a logfile , –append-output&#x3D;logfile  与-o功能相同，但—a是追加写，-o是覆盖写，若日志文件不存在则创建</p>
+<p>-d , –debug  开启debug模式，如果wget在编译时未选择“支持debug模式”，则-d参数不生效</p>
+<p>-q , –quiet  关闭wget下载时的日志输出</p>
+<p>-nv , –no-verbose  非冗余模式，只打印必要的错误信息和基础日志信息</p>
+<p>-i , –input-file&#x3D;FILE  允许你从一个包含多个URL的文本文件中批量下载文件。每个URL应该单独占据一行。如果使用-i -，则表示通过标准输入(stdin)读取url列表<br>如：cat urls.txt | wget -i -</p>
+<p> -F,  –force-html      把输入文件当成 HTML 文件。</p>
+<p>–input-metalink&#x3D;file   Metalink是一种XML格式，用于在一个文件中聚合单个文件下载所需的所有元数据，包括多个镜像地址、校验和以及分块下载等信息。仅支持Metalink 3、Metalink4</p>
+<p>-nc， –no-clobber   若同名文件已存在且大小相同(基于Last-Modified或ETag头部信息判断)，则不进行覆盖，且如果远程文件更新，与本地文件大小不同，则下载覆盖。<br>不使用-nc时，如文件已存在则会创建file.1  file.2  等多个不同命文件</p>
+<h2 id="axel常用参数"><a href="#axel常用参数" class="headerlink" title="axel常用参数"></a>axel常用参数</h2><h2 id="aria2常用参数"><a href="#aria2常用参数" class="headerlink" title="aria2常用参数"></a>aria2常用参数</h2>
                 
               </div>
             
@@ -312,6 +305,12 @@
       
         <a href="/tags/linux/">#linux</a>
       
+        <a href="/tags/wget/">#wget</a>
+      
+        <a href="/tags/axel/">#axel</a>
+      
+        <a href="/tags/aria2/">#aria2</a>
+      
     </div>
   
 </div>
@@ -322,8 +321,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【填坑】linux-0.11源码阅读</div>
-      <div>http://example.com/2023/05/09/post2/</div>
+      <div>常用的三个下载指令，wget|axel|aria2</div>
+      <div>http://example.com/2024/03/11/post3/</div>
     </div>
     <div class="license-meta">
       
@@ -335,7 +334,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月9日</div>
+          <div>2024年3月11日</div>
         </div>
       
       
@@ -367,9 +366,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/03/11/post3/" title="常用的三个下载指令，wget|axel|aria2">
+                      <a href="/2024/03/12/post4/" title="常用中间件默认端口，windows、linux服务默认端口">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">常用的三个下载指令，wget|axel|aria2</span>
+                        <span class="hidden-mobile">常用中间件默认端口，windows、linux服务默认端口</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -377,8 +376,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/05/post1/" title="C语言中不同数据类型，定义变量的顺序对栈内存分配的影响">
-                        <span class="hidden-mobile">C语言中不同数据类型，定义变量的顺序对栈内存分配的影响</span>
+                      <a href="/2023/05/09/post2/" title="【填坑】linux-0.11源码阅读">
+                        <span class="hidden-mobile">【填坑】linux-0.11源码阅读</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

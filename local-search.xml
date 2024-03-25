@@ -4,11 +4,72 @@
   
   
   <entry>
+    <title>aspcode 搭建及代码分析</title>
+    <link href="/2024/03/13/post5/"/>
+    <url>/2024/03/13/post5/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>aspcode</tag>
+      
+      <tag>asp.dll</tag>
+      
+      <tag>iis4&#92;iis5&#92;iis5.1</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>常用中间件默认端口，windows、linux服务默认端口</title>
+    <link href="/2024/03/12/post4/"/>
+    <url>/2024/03/12/post4/</url>
+    
+    <content type="html"><![CDATA[<h2 id="一、中间件"><a href="#一、中间件" class="headerlink" title="一、中间件"></a>一、中间件</h2><h3 id="Apache-Tomcat"><a href="#Apache-Tomcat" class="headerlink" title="Apache Tomcat"></a>Apache Tomcat</h3><p>默认HTTP监听端口：8080<br>AJP&#x2F;1.3 Connector（如果启用）默认端口：8009</p><h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><p>默认TCP&#x2F;IP连接端口：3306</p><h3 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h3><p>默认监听端口（LISTENER）：1521</p><h3 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h3><p>默认AMQP端口：5672<br>默认管理插件web界面端口：15672</p><h3 id="Apache-Kafka"><a href="#Apache-Kafka" class="headerlink" title="Apache Kafka"></a>Apache Kafka</h3><p>生产者和消费者使用的默认Broker端口：9092<br>ZooKeeper默认端口：2181（Kafka通常与ZooKeeper一起工作，用于集群协调）</p><h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p>默认TCP端口：6379<br>Redis Sentinel（哨兵模式）默认端口：26379</p><h3 id="Kubernetes"><a href="#Kubernetes" class="headerlink" title="Kubernetes"></a>Kubernetes</h3><p>API服务器的默认端口：6443（用于与集群内部及外部客户端通信）<br>Kubelet的默认HTTP端口：10250（用于节点与主节点通信）<br>Kubelet的默认HTTPS端口：10255（在较早版本中用于健康状况检查和监控；在较新版本中，推荐使用10250端口上的HTTPS）<br>etcd默认客户端端口：2379<br>etcd默认服务器间通信端口：2380</p><h3 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h3><p>Elasticsearch REST API 端口：9200<br>这是 Elasticsearch 的主要 HTTP 接口，用于对外提供索引数据查询、插入、删除、更新等RESTful API服务。</p><p>Elasticsearch Transport 协议端口：9300<br>这是 Elasticsearch 节点之间内部通信的默认端口，使用的是 Elasticsearch 自定义的传输协议，用于集群内部的节点通信、数据同步等工作。</p><h2 id="二、linux系统服务"><a href="#二、linux系统服务" class="headerlink" title="二、linux系统服务"></a>二、linux系统服务</h2><h3 id="sshd："><a href="#sshd：" class="headerlink" title="sshd："></a>sshd：</h3><p>开放端口：22（默认SSH服务端口，用于远程登录）</p><h3 id="apache2-x2F-httpd-或-nginx："><a href="#apache2-x2F-httpd-或-nginx：" class="headerlink" title="apache2&#x2F;httpd 或 nginx："></a>apache2&#x2F;httpd 或 nginx：</h3><p>开放端口：80（HTTP）<br>可能还会开放：443（HTTPS）</p><h3 id="nfs-server-网络文件系统（NFS）服务："><a href="#nfs-server-网络文件系统（NFS）服务：" class="headerlink" title="nfs-server 网络文件系统（NFS）服务："></a>nfs-server 网络文件系统（NFS）服务：</h3><p>开放端口：111（Portmapper）、2049（NFS）、以及其他依赖于服务类型和配置的端口</p><h3 id="samba-SMB-x2F-CIFS服务"><a href="#samba-SMB-x2F-CIFS服务" class="headerlink" title="samba SMB&#x2F;CIFS服务"></a>samba SMB&#x2F;CIFS服务</h3><p>让Linux系统能够与Windows系统进行文件共享：<br>开放端口：139（NetBIOS Session Service）、445（Microsoft-DS，用于SMB&#x2F;CIFS文件共享）</p><h3 id="ldap-server"><a href="#ldap-server" class="headerlink" title="ldap-server"></a>ldap-server</h3><p>轻量级目录访问协议（LDAP）服务器，用于集中式的用户和组管理。：<br>开放端口：389（LDAP，默认明文传输）<br>开放端口：636（LDAPS，默认SSL加密传输）</p><h3 id="postfix（邮件服务）："><a href="#postfix（邮件服务）：" class="headerlink" title="postfix（邮件服务）："></a>postfix（邮件服务）：</h3><p>开放端口：25（SMTP，默认邮件发送端口）<br>开放端口：587（submission，用于邮件客户端提交邮件）<br>开放端口：110（POP3，邮件接收端口，可选）<br>开放端口：995（POP3S，加密的邮件接收端口，可选）<br>开放端口：143（IMAP，邮件接收端口，可选）<br>开放端口：993（IMAPS，加密的邮件接收端口，可选）</p><h3 id="openssh-server："><a href="#openssh-server：" class="headerlink" title="openssh-server："></a>openssh-server：</h3><p>已提及，开放端口：22</p><h3 id="DNS服务（bind-x2F-named）："><a href="#DNS服务（bind-x2F-named）：" class="headerlink" title="DNS服务（bind&#x2F;named）："></a>DNS服务（bind&#x2F;named）：</h3><p>开放端口：53（DNS标准查询端口）</p><h2 id="三、windows系统服务"><a href="#三、windows系统服务" class="headerlink" title="三、windows系统服务"></a>三、windows系统服务</h2><h3 id="Remote-Desktop-Services（远程桌面服务）："><a href="#Remote-Desktop-Services（远程桌面服务）：" class="headerlink" title="Remote Desktop Services（远程桌面服务）："></a>Remote Desktop Services（远程桌面服务）：</h3><p>开放端口：3389（默认的RDP端口，用于远程桌面连接）</p><h3 id="IIS-Web-Server（Internet-Information-Services，互联网信息服务）："><a href="#IIS-Web-Server（Internet-Information-Services，互联网信息服务）：" class="headerlink" title="IIS Web Server（Internet Information Services，互联网信息服务）："></a>IIS Web Server（Internet Information Services，互联网信息服务）：</h3><p>开放端口：80（HTTP服务端口，用于网页浏览）<br>开放端口：443（HTTPS服务端口，用于加密网页浏览）</p><h3 id="SQL-Server："><a href="#SQL-Server：" class="headerlink" title="SQL Server："></a>SQL Server：</h3><p>开放端口：1433（默认的SQL Server数据库监听端口）</p><h3 id="FTP-Server（File-Transfer-Protocol，文件传输协议服务）："><a href="#FTP-Server（File-Transfer-Protocol，文件传输协议服务）：" class="headerlink" title="FTP Server（File Transfer Protocol，文件传输协议服务）："></a>FTP Server（File Transfer Protocol，文件传输协议服务）：</h3><p>开放端口：20和21（端口21主要负责FTP的命令交互和控制信息，端口20在主动模式FTP中负责数据传输）<br>可能还会开放额外的被动模式FTP端口范围，如1024-65535中的随机端口</p><h3 id="SMTP-Server（Simple-Mail-Transfer-Protocol，简单邮件传输协议服务）："><a href="#SMTP-Server（Simple-Mail-Transfer-Protocol，简单邮件传输协议服务）：" class="headerlink" title="SMTP Server（Simple Mail Transfer Protocol，简单邮件传输协议服务）："></a>SMTP Server（Simple Mail Transfer Protocol，简单邮件传输协议服务）：</h3><p>开放端口：25（SMTP，默认邮件发送端口）<br>开放端口：587（通常用于提交邮件，尤其是在需要身份验证的情况下）</p><h3 id="Telnet："><a href="#Telnet：" class="headerlink" title="Telnet："></a>Telnet：</h3><p>开放端口：23（默认的Telnet服务端口）</p><h3 id="Windows-SMB-File-Sharing（Server-Message-Block，服务器消息块协议）："><a href="#Windows-SMB-File-Sharing（Server-Message-Block，服务器消息块协议）：" class="headerlink" title="Windows SMB File Sharing（Server Message Block，服务器消息块协议）："></a>Windows SMB File Sharing（Server Message Block，服务器消息块协议）：</h3><p>开放端口：139（NetBIOS Session Service）<br>开放端口：445（Microsoft-DS，用于SMB&#x2F;CIFS文件共享）</p><h3 id="Windows-Time-Service（W32Time，用于时间同步）："><a href="#Windows-Time-Service（W32Time，用于时间同步）：" class="headerlink" title="Windows Time Service（W32Time，用于时间同步）："></a>Windows Time Service（W32Time，用于时间同步）：</h3><p>开放端口：123（NTP端口，网络时间协议）</p><h3 id="Windows-Remote-Management（WinRM，用于远程管理）："><a href="#Windows-Remote-Management（WinRM，用于远程管理）：" class="headerlink" title="Windows Remote Management（WinRM，用于远程管理）："></a>Windows Remote Management（WinRM，用于远程管理）：</h3><p>开放端口：5985（HTTP通道）<br>开放端口：5986（HTTPS通道）</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>常用的三个下载指令，wget|axel|aria2</title>
+    <link href="/2024/03/11/post3/"/>
+    <url>/2024/03/11/post3/</url>
+    
+    <content type="html"><![CDATA[<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><p>wget    参数最丰富，可下载全站，很多细节可通过参数来定义，适合简单轻量的下载需求</p><p>axel    相比wget，更擅长多线程下载，参数较aria2更简单</p><p>aria2   支持多种协议、多线程、断点续传，特别是bt下载的超大文件，且支持rpc接口</p><h2 id="wget常用参数"><a href="#wget常用参数" class="headerlink" title="wget常用参数"></a>wget常用参数</h2><p>-b , –background  启动后转入后台</p><p>-e COMMAND , –execute&#x3D;COMMAND   运行一个“.wgetrc”风格的命令</p><p>-o logfile , –output-file&#x3D;logfile  输出日志信息至指定文件</p><p>-a logfile , –append-output&#x3D;logfile  与-o功能相同，但—a是追加写，-o是覆盖写，若日志文件不存在则创建</p><p>-d , –debug  开启debug模式，如果wget在编译时未选择“支持debug模式”，则-d参数不生效</p><p>-q , –quiet  关闭wget下载时的日志输出</p><p>-nv , –no-verbose  非冗余模式，只打印必要的错误信息和基础日志信息</p><p>-i , –input-file&#x3D;FILE  允许你从一个包含多个URL的文本文件中批量下载文件。每个URL应该单独占据一行。如果使用-i -，则表示通过标准输入(stdin)读取url列表<br>如：cat urls.txt | wget -i -</p><p> -F,  –force-html      把输入文件当成 HTML 文件。</p><p>–input-metalink&#x3D;file   Metalink是一种XML格式，用于在一个文件中聚合单个文件下载所需的所有元数据，包括多个镜像地址、校验和以及分块下载等信息。仅支持Metalink 3、Metalink4</p><p>-nc， –no-clobber   若同名文件已存在且大小相同(基于Last-Modified或ETag头部信息判断)，则不进行覆盖，且如果远程文件更新，与本地文件大小不同，则下载覆盖。<br>不使用-nc时，如文件已存在则会创建file.1  file.2  等多个不同命文件</p><h2 id="axel常用参数"><a href="#axel常用参数" class="headerlink" title="axel常用参数"></a>axel常用参数</h2><h2 id="aria2常用参数"><a href="#aria2常用参数" class="headerlink" title="aria2常用参数"></a>aria2常用参数</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>linux</tag>
+      
+      <tag>wget</tag>
+      
+      <tag>axel</tag>
+      
+      <tag>aria2</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>【填坑】linux-0.11源码阅读</title>
     <link href="/2023/05/09/post2/"/>
     <url>/2023/05/09/post2/</url>
     
-    <content type="html"><![CDATA[<p>参考资料:</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/dibingfa/</span>flash-linux0.<span class="hljs-number">11</span>-talk<br></code></pre></td></tr></table></figure><p>源码地址:</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>elixir.bootlin.com<span class="hljs-regexp">/linux/</span><span class="hljs-number">0.11</span>/source<br></code></pre></td></tr></table></figure><h2 id="分页机制，页目录表、页表的定义"><a href="#分页机制，页目录表、页表的定义" class="headerlink" title="分页机制，页目录表、页表的定义"></a>分页机制，页目录表、页表的定义</h2><p>参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个<br><img src="./pages_def.svg"><br></p><p>分段、分页的流程总结为：<br>1、给出逻辑地址，地址拆分为段选择子+偏移地址<br>段选择子通过GDT表查到段基址，再与偏移地址相加获得线性地址</p><p>2、若开启了分页机制，则<br>分段机制获得的线性地址需要再次计算<br>页目录表值-页表偏移值-页内偏移地址(32位模式下)<br>  10位 -     10位   -   12位</p><p>通过页目录表值、页表偏移地址获得页表项地址，再与页内偏移地址相加最终获得物理地址</p><p><img src="./logicalAddr_to_linearAddr.png"><br><br><img src="./seg_paging.png"><br></p><h2 id="空闲内存页申请"><a href="#空闲内存页申请" class="headerlink" title="空闲内存页申请"></a>空闲内存页申请</h2><p>get_free_page()方法，扫描空闲内存页时，内核会从高地址的内存页链表中查找空闲页面。如果找到了空闲页面，就将其标记为已使用，并返回该页面的物理地址。如果没有找到空闲页面，则会进行内存压缩操作，以腾出一些空闲页面。</p><h2 id="挖坑待看："><a href="#挖坑待看：" class="headerlink" title="挖坑待看："></a>挖坑待看：</h2><p>有关寄存器的详细信息，可以参考 Intel 手册：<br>Volume 1 Chapter 3.2 OVERVIEW OF THE BASIC EXECUTION ENVIRONMEN</p><p>如果想了解计算机启动时详细的初始化过程，还是得参考 Intel 手册：<br>Volume 3A Chapter 9 PROCESSOR MANAGEMENT AND INITIALIZATION</p><p>如果想了解汇编指令的信息，可以参考 Intel 手册：<br>Volume 2 Chapter 3 ~ Chapter 5</p><p>保护模式下逻辑地址到线性地址（不开启分页时就是物理地址）的转化，看 Intel 手册：<br>Volume 3 Chapter 3.4 Logical And Linear Addresses</p><p>关于逻辑地址-线性地址-物理地址的转换，可以参考 Intel 手册：<br>Intel 3A Chapter 3 Protected-Mode Memory Management</p><p>段描述符结构和详细说明，看 Intel 手册：<br>Volume 3 Chapter 3.4.5 Segment Descriptors</p><p>页目录表和页表的具体结构，可以看<br>Intel 3A Chapter 4.3 32-bit paging</p><p>关于 ret 指令，其实 Intel CPU 是配合 call 设计的，有关 call 和 ret 指令，即调用和返回指令，可以参考 Intel 手册：<br>Intel 1 Chapter 6.4 CALLING PROCEDURES USING CALL AND RET</p>]]></content>
+    <content type="html"><![CDATA[<p>参考资料:</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/dibingfa/</span>flash-linux0.<span class="hljs-number">11</span>-talk<br></code></pre></td></tr></table></figure><p>源码地址:</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">https:<span class="hljs-regexp">//</span>elixir.bootlin.com<span class="hljs-regexp">/linux/</span><span class="hljs-number">0.11</span>/source<br></code></pre></td></tr></table></figure><h2 id="分页机制，页目录表、页表的定义"><a href="#分页机制，页目录表、页表的定义" class="headerlink" title="分页机制，页目录表、页表的定义"></a>分页机制，页目录表、页表的定义</h2><p>参考资料里这块说的有点啰嗦，看得头疼自己重新画了一个<br><img src="./pages_def.svg"><br></p><p>分段、分页的流程总结为：<br>1、给出逻辑地址，地址拆分为段选择子+偏移地址<br>段选择子通过GDT表查到段基址，再与偏移地址相加获得线性地址</p><p>2、若开启了分页机制，则<br>分段机制获得的线性地址需要再次计算<br>页目录表值-页表偏移值-页内偏移地址(32位模式下)<br>  10位 -     10位   -   12位</p><p>通过页目录表值、页表偏移地址获得页表项地址，再与页内偏移地址相加最终获得物理地址</p><p><img src="./logicalAddr_to_linearAddr.png"><br><br><img src="./seg_paging.png"><br></p><h2 id="空闲内存页申请"><a href="#空闲内存页申请" class="headerlink" title="空闲内存页申请"></a>空闲内存页申请</h2><p>memory.c的get_free_page()方法，函数里内嵌了一段汇编代码，扫描空闲内存页时，内核会从高地址的内存页链表中查找空闲页面。如果找到了空闲页面，就将其标记为已使用，并返回该页面的物理地址。如果没有找到空闲页面，则会进行内存压缩操作，以腾出一些空闲页面。</p><h2 id="挖坑待看："><a href="#挖坑待看：" class="headerlink" title="挖坑待看："></a>挖坑待看：</h2><p>有关寄存器的详细信息，可以参考 Intel 手册：<br>Volume 1 Chapter 3.2 OVERVIEW OF THE BASIC EXECUTION ENVIRONMEN</p><p>如果想了解计算机启动时详细的初始化过程，还是得参考 Intel 手册：<br>Volume 3A Chapter 9 PROCESSOR MANAGEMENT AND INITIALIZATION</p><p>如果想了解汇编指令的信息，可以参考 Intel 手册：<br>Volume 2 Chapter 3 ~ Chapter 5</p><p>保护模式下逻辑地址到线性地址（不开启分页时就是物理地址）的转化，看 Intel 手册：<br>Volume 3 Chapter 3.4 Logical And Linear Addresses</p><p>关于逻辑地址-线性地址-物理地址的转换，可以参考 Intel 手册：<br>Intel 3A Chapter 3 Protected-Mode Memory Management</p><p>段描述符结构和详细说明，看 Intel 手册：<br>Volume 3 Chapter 3.4.5 Segment Descriptors</p><p>页目录表和页表的具体结构，可以看<br>Intel 3A Chapter 4.3 32-bit paging</p><p>关于 ret 指令，其实 Intel CPU 是配合 call 设计的，有关 call 和 ret 指令，即调用和返回指令，可以参考 Intel 手册：<br>Intel 1 Chapter 6.4 CALLING PROCEDURES USING CALL AND RET</p>]]></content>
     
     
     
